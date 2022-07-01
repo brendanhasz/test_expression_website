@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Page Title</title>
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <!-- Script for autocompletion -->
+    <script src="assets/js/autocomplete.js"></script>
+
+    <!-- Script to load data -->
+    <script src="assets/js/load_expression_csv.js"></script>
+
+    <!-- Script to render the gene graph -->
+    <!-- TODO -->
+
+</head>
+
+
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <h1>Project Name</h1>
+        </div>
+        <div class="header-right">
+            <img src="assets/img/stanford_logo.png" alt="University logo">
+        </div>
+    </div>
+
+    <br>
+
+    <div class="main-container">
+
+        <div class="main">
+
+            <!-- Intro -->
+            <p>Introduction to the project...</p>
+
+            <br>
+
+            <!-- Search bar -->
+            <form autocomplete="off" onsubmit="plotExpression(); return false">
+                <div class="autocomplete" style="width:270px;">
+                <input id="geneInput" type="text" name="geneInputText" placeholder="Search for a gene">
+                </div>
+                <div class="dropdown">
+                    <select id="comparison_type">
+                        <option value="wf-wc">WT Fracture vs WT Control</option>
+                        <option value="df-wf">DTR Fracture vs WT Fracture</option>
+                        <option value="df-dc">DTR Fracture vs DTR Control</option>
+                        <option value="dc-wc">DTR Control vs WT Control</option>
+                    </select>
+                </div>
+                <div class="dropdown">
+                    <select class="dropdown" id="gender">
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+                <input type="submit" value="Go!">
+            </form>
+
+            <br>
+
+            <!-- Bar graph -->
+            <div id="bar_chart"></div>
+
+            <!-- Log fold change -->
+            <p id="log_fold_change"></p>
+
+        </div>
+
+    </div>
+
+    <!-- Page load tasks and callbacks -->
+    <script src="assets/js/main.js"></script>
+
+</body>
+
+
+</html>
