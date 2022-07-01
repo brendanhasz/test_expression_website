@@ -1,0 +1,140 @@
+
+img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+body {
+    margin: 0px;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h1 {
+    color: white;
+    font-weight: normal;
+}
+
+.main-container {
+    display: flex;
+    width: 100%;
+}
+
+.main {
+    display: inline-block;
+    margin: 0 auto;
+    width: 800px;
+    padding: 5px;
+}
+
+.header {
+    background-color: rgba(128, 36, 33);
+    height: 120px;
+    width: 100%;
+}
+
+.header-left {
+    float: left;
+    height: 100px;
+    margin: 20px;
+}
+
+.header-right {
+    float: right;
+    height: 100px;
+    margin: 10px;
+}
+
+
+
+/* Autocomplete text box and button */
+
+.autocomplete {
+    position: relative;
+    display: inline-block;
+}
+
+input {
+    border: 1px solid transparent;
+    background-color: #f1f1f1;
+    padding: 10px;
+    font-size: 16px;
+}
+
+input[type=text] {
+    background-color: #f1f1f1;
+    width: 90%;
+}
+
+input[type=submit] {
+    background-color: DodgerBlue;
+    color: #fff;
+    cursor: pointer;
+}
+
+.autocomplete-items {
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+    /*position the autocomplete items to be the same width as the container:*/
+    top: 100%;
+    left: 0;
+    right: 0;
+  }
+  
+  .autocomplete-items div {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff; 
+    border-bottom: 1px solid #d4d4d4; 
+  }
+  
+  /*when hovering an item:*/
+  .autocomplete-items div:hover {
+    background-color: #e9e9e9; 
+  }
+  
+  /*when navigating through the items using the arrow keys:*/
+  .autocomplete-active {
+    background-color: DodgerBlue !important; 
+    color: #ffffff; 
+  }
+
+
+
+/* Dropdowns */
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+select {
+    padding: 5px 35px 5px 5px;
+    font-size: 14px;
+    border: 0px solid #CCC;
+    height: 36px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: #e9e9e9;
+    background-image: url(https://cdn.iconscout.com/icon/free/png-256/keyboard-down-arrow-1780093-1518654.png);
+    background-repeat: no-repeat;
+    background-size: 30px 30px;
+    background-position: right 0px top 3px;
+}
+    
+  
+select::-ms-expand {
+    display: none; /* Remove default arrow in Internet Explorer 10 and 11 */
+}
+  
+/* Target Internet Explorer 9 to undo the custom arrow */
+@media screen and (min-width:0\0) {
+    select {
+        background: none\9;
+        padding: 5px\9;
+    }
+}
