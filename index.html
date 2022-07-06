@@ -19,8 +19,8 @@
     <!-- Script to load data -->
     <script src="assets/js/load_expression_csv.js"></script>
 
-    <!-- Script to render the gene graph -->
-    <!-- TODO -->
+    <!-- Script to render the graph -->
+    <script src="assets/js/bar_graph.js"></script>
 
 </head>
 
@@ -73,7 +73,9 @@
             <br>
 
             <!-- Bar graph -->
-            <div id="bar_chart"></div>
+            <div>
+                <svg id="bar_chart" xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500"></svg>
+            </div>
 
             <!-- Log fold change -->
             <p id="log_fold_change"></p>
