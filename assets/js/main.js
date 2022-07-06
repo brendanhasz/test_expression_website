@@ -21,34 +21,53 @@ function plotExpression() {
     // Don't update if no valid gene entered
     if (!(gene_name in gene_expression)) return false;
 
-    console.log("gene_name:", gene_name);
-    console.log("comparison_type:", comparison_type);
-    console.log("gender:", gender);
-
     // Get labels, values, and SEM for each bar
-    // TODO
-
-    // Draw the graph
-    // TODO
-    //redrawGraph("#bar_chart", gene_expression, displayed_genes)
-    document.getElementById("bar_chart").innerHTML = "<img src='https://icon-library.com/images/chart-icon-svg/chart-icon-svg-4.jpg' width='800px' height='500px'>";
-
-    // Update fold change text
-    var log_fold_change;
+    var v0; // Column with value for bar 1
+    var v1; // Column with value for bar 2
+    var s0; // Column with SEM for bar 1
+    var s1; // Column with SEM for bar 2
+    var lfc; // Column with log fold change
     switch (comparison_type) {
         case "wf-wc":
-            log_fold_change = gene_expression[gene_name][6];
+            v0 = 3;
+            v1 = 2;
+            s0 = 15;
+            s1 = 14;
+            lfc = 6;
             break;
         case "df-wf":
-            log_fold_change = gene_expression[gene_name][7];
+            v0 = 5;
+            v1 = 3;
+            s0 = 17;
+            s1 = 15;
+            lfc = 7;
             break;
         case "df-dc":
-            log_fold_change = gene_expression[gene_name][8];
+            v0 = 5;
+            v1 = 4;
+            s0 = 17;
+            s1 = 16;
+            lfc = 8;
             break;
         case "dc-wc":
-            log_fold_change = gene_expression[gene_name][9];
+            v0 = 4;
+            v1 = 2;
+            s0 = 16;
+            s1 = 14;
+            lfc = 9;
             break;
     }
+    var all_labels = ["", "", "WT Control", "WT Fracture", "DTR Control", "DTR Fracture"];
+    var gene_values = gene_expression[gene_name];
+    var labels = [all_labels[v0], all_labels[v1]];
+    var values = [parseFloat(gene_values[v0]), parseFloat(gene_values[v1])];
+    var sems = [parseFloat(gene_values[s0]), parseFloat(gene_values[s1])];
+    var log_fold_change = gene_values[lfc];
+
+    // Clear existing graph, the draw the new graph
+    barGraph(document.getElementById("bar_chart"), labels, values, sems);
+
+    // Update fold change text
     document.getElementById("log_fold_change").innerHTML = `Log2 of Transcript Count Fold Change: <b>${log_fold_change}</b>`;
 
     // Reset input
