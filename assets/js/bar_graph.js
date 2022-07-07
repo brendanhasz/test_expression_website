@@ -16,13 +16,17 @@ function drawLine(element, x1, y1, x2, y2, arrow = false, stroke = "black", stro
 }
 
 /* Draw a rectangle */
-function drawRect(element, x, y, width, height, fill = "black"){
+function drawRect(element, x, y, width, height, fill = "black", stroke_width = null, stroke_color = null){
     var new_rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
     new_rect.setAttribute('x', x);
     new_rect.setAttribute('y', y);
     new_rect.setAttribute('width', width);
     new_rect.setAttribute('height', height);
     new_rect.setAttribute("fill", fill);
+    if (stroke_width !== null) {
+        new_rect.setAttribute("stroke-width", stroke_width);
+        new_rect.setAttribute("stroke", stroke_color);
+    }
     element.append(new_rect);
 }
 
@@ -77,9 +81,10 @@ function barGraph(svg, labels, values, sems, title = "", ylabel = ""){
     var y_ax_pad = 0.1;
     var b_pad = 0.1;
     var sem_wid = 0.1;
-    var sem_color = "black";
-    var sem_stroke_width = 1;
+    var sem_stroke_width = 3;
+    var box_stroke_width = 3;
     var colors = ["#E69F00", "#56B4E9", "#009E73", "#F0E442"];
+    var fill_colors = ["#ffd375", "#a9d8f4", "#00e6a8", "#f7f2a1"];
     var ylims = null;
     var arrow_size = 10;
     var label_pad = 10;
@@ -143,7 +148,7 @@ function barGraph(svg, labels, values, sems, title = "", ylabel = ""){
     }
 
     // Figure out where Y ticks should be
-    var n_tick_target = 10;  // want there to be roughly 10 ticks
+    var n_tick_target = 8;  // want there to be roughly this many ticks
     var dtick_target = (ymax - ymin) / n_tick_target;
     var dtick_scale = Math.pow(10, Math.floor(Math.log10(dtick_target)));
     var tick_multiples = [1, 2, 5, 10];
@@ -181,7 +186,7 @@ function barGraph(svg, labels, values, sems, title = "", ylabel = ""){
         by = (ymax - values[i]) / (ymax - ymin) * g_dy + g_y0;
         bw = x_tick_dx * (1 - 2 * b_pad);
         bh = g_y1 - by;
-        drawRect(svg, bx, by, x_tick_dx - 2 * b_pad * x_tick_dx, bh, colors[i]);
+        drawRect(svg, bx, by, x_tick_dx - 2 * b_pad * x_tick_dx, bh, fill_colors[i], box_stroke_width, colors[i]);
     }
 
     // Draw SEM bars
@@ -190,12 +195,13 @@ function barGraph(svg, labels, values, sems, title = "", ylabel = ""){
         y1 = (ymax - values[i] + sems[i]) / (ymax - ymin) * g_dy + g_y0;
         x0 = x_tick_values[i] - x_tick_dx * sem_wid;
         x1 = x_tick_values[i] + x_tick_dx * sem_wid;
-        drawLine(svg, x_tick_values[i], y0, x_tick_values[i], y1, false, sem_color, sem_stroke_width);
-        drawLine(svg, x0, y0, x1, y0, false, sem_color, sem_stroke_width);
-        drawLine(svg, x0, y1, x1, y1, false, sem_color, sem_stroke_width);
+        drawLine(svg, x_tick_values[i], y0, x_tick_values[i], y1, false, colors[i], sem_stroke_width);
+        drawLine(svg, x0, y0, x1, y0, false, colors[i], sem_stroke_width);
+        drawLine(svg, x0, y1, x1, y1, false, colors[i], sem_stroke_width);
     }
 
     // X axis
+    drawRect(svg, g_x0, g_y1, (g_x1-g_x0), 5, "#ffffff");
     drawLine(svg, g_x0, g_y1, g_x1, g_y1, true);
 
     // Y axis
