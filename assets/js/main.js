@@ -1,5 +1,8 @@
 /* Page load tasks and callbacks */
 
+// Display loading message
+document.getElementById("loading").innerHTML = "Loading...";
+
 // Load the CSV
 var gene_expression = loadExpressionCSV("data/data.csv");
 // NOTE: Need to use nonlocal link below when developing, otherwise CORS errors :roll_eyes:
@@ -7,6 +10,9 @@ var gene_expression = loadExpressionCSV("data/data.csv");
 
 // Set the autocomplete candidates to the gene names
 autocomplete(document.getElementById("geneInput"), Object.keys(gene_expression));
+
+// Display done loading message
+document.getElementById("loading").innerHTML = "";
 
 /* Add a gene to the plot */
 function plotExpression() {
@@ -65,7 +71,7 @@ function plotExpression() {
     var log_fold_change = gene_values[lfc];
 
     // Clear existing graph, the draw the new graph
-    barGraph(document.getElementById("bar_chart"), labels, values, sems);
+    barGraph(document.getElementById("bar_chart"), labels, values, sems, gene_name, "ylabel");
 
     // Update fold change text
     document.getElementById("log_fold_change").innerHTML = `Log2 of Transcript Count Fold Change: <b>${log_fold_change}</b>`;
