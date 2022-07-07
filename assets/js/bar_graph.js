@@ -1,6 +1,6 @@
 /* Draw a line */
 function drawLine(element, x1, y1, x2, y2, arrow = false, stroke = "black", stroke_width = null){
-    var new_line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    var new_line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     new_line.setAttribute('x1', x1);
     new_line.setAttribute('y1', y1);
     new_line.setAttribute('x2', x2);
@@ -16,8 +16,8 @@ function drawLine(element, x1, y1, x2, y2, arrow = false, stroke = "black", stro
 }
 
 /* Draw a rectangle */
-function drawRect(element, x, y, width, height, fill = "black", stroke_width = null, stroke_color = null){
-    var new_rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+function drawRect(element, x, y, width, height, fill = "black", stroke_width = null, stroke_color = null, hovertext = null){
+    var new_rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
     new_rect.setAttribute('x', x);
     new_rect.setAttribute('y', y);
     new_rect.setAttribute('width', width);
@@ -27,12 +27,17 @@ function drawRect(element, x, y, width, height, fill = "black", stroke_width = n
         new_rect.setAttribute("stroke-width", stroke_width);
         new_rect.setAttribute("stroke", stroke_color);
     }
+    if (hovertext !== null) {
+        var new_title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+        new_title.innerHTML = hovertext;
+        new_rect.appendChild(new_title);
+    }
     element.append(new_rect);
 }
 
 /* Draw text */
 function drawText(element, x, y, text, font_size, text_anchor, alignment_baseline, transform = null, font_style = null){
-    var new_text = document.createElementNS('http://www.w3.org/2000/svg','text');
+    var new_text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     new_text.setAttribute('x', x);
     new_text.setAttribute('y', y);
     new_text.setAttribute("font-size", font_size);
@@ -186,7 +191,8 @@ function barGraph(svg, labels, values, sems, title = "", ylabel = ""){
         by = (ymax - values[i]) / (ymax - ymin) * g_dy + g_y0;
         bw = x_tick_dx * (1 - 2 * b_pad);
         bh = g_y1 - by;
-        drawRect(svg, bx, by, x_tick_dx - 2 * b_pad * x_tick_dx, bh, fill_colors[i], box_stroke_width, colors[i]);
+        hovertext = `${labels[i]}: ${values[i]} +/- ${sems[i]}`;
+        drawRect(svg, bx, by, x_tick_dx - 2 * b_pad * x_tick_dx, bh, fill_colors[i], box_stroke_width, colors[i], hovertext);
     }
 
     // Draw SEM bars
