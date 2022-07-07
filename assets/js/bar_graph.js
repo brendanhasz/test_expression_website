@@ -1,5 +1,5 @@
 /* Draw a line */
-function drawLine(element, x1, y1, x2, y2, arrow = false, stroke = "black"){
+function drawLine(element, x1, y1, x2, y2, arrow = false, stroke = "black", stroke_width = null){
     var new_line = document.createElementNS('http://www.w3.org/2000/svg','line');
     new_line.setAttribute('x1', x1);
     new_line.setAttribute('y1', y1);
@@ -8,6 +8,9 @@ function drawLine(element, x1, y1, x2, y2, arrow = false, stroke = "black"){
     new_line.setAttribute("stroke", stroke);
     if (arrow == true) {
         new_line.setAttribute("marker-end", "url(#arrowhead)");
+    }
+    if (stroke_width !== null) {
+        new_line.setAttribute("stroke-width", stroke_width);
     }
     element.append(new_line);
 }
@@ -24,30 +27,63 @@ function drawRect(element, x, y, width, height, fill = "black"){
 }
 
 /* Draw text */
-function drawText(element, x, y, text, font_size = 14){
+function drawText(element, x, y, text, font_size, text_anchor, alignment_baseline, transform = null, font_style = null){
     var new_text = document.createElementNS('http://www.w3.org/2000/svg','text');
     new_text.setAttribute('x', x);
     new_text.setAttribute('y', y);
     new_text.setAttribute("font-size", font_size);
-    new_text.setAttribute("text-anchor", "middle");
-    new_text.setAttribute("alignment-baseline", "hanging");
+    new_text.setAttribute("text-anchor", text_anchor);
+    new_text.setAttribute("alignment-baseline", alignment_baseline);
+    if (transform !== null) {
+        new_text.setAttribute("transform", transform);
+        new_text.setAttribute("transform-origin", `${x} ${y}`);
+    }
+    if (font_style !== null) {
+        new_text.setAttribute("font-style", font_style);
+    }
     var new_text_node = document.createTextNode(text);
     new_text.appendChild(new_text_node);
     element.append(new_text);
 }
 
+/* Draw an X axis tick label */
+function draw_x_tick_label(element, x, y, text){
+    drawText(element, x, y, text, 14, "middle", "hanging");
+}
+
+/* Draw a Y axis tick label */
+function draw_y_tick_label(element, x, y, text){
+    drawText(element, x, y, text, 14, "end", "middle");
+}
+
+/* Draw Y axis label */
+function draw_y_label(element, x, y, text){
+    drawText(element, x, y, text, 14, "middle", "hanging", "rotate(270)");
+}
+
+/* Draw title */
+function draw_title(element, x, y, text){
+    drawText(element, x, y, text, 16, "middle", "hanging", null, "oblique");
+}
+
 /* Draw a bar plot SVG. */
-function barGraph(svg, labels, values, sems){
+function barGraph(svg, labels, values, sems, title = "", ylabel = ""){
 
     // TODO: Make settings here optional args: colors, padding vlaues, xlims and ylims
     var bgcolor = "#eeeeee";
+    var ytick_color = "#f8f8f8";
     var x_pad = 0.1;
     var y_pad = 0.1;
     var y_ax_pad = 0.1;
     var b_pad = 0.1;
     var sem_wid = 0.1;
+    var sem_color = "black";
+    var sem_stroke_width = 1;
     var colors = ["#E69F00", "#56B4E9", "#009E73", "#F0E442"];
     var ylims = null;
+    var arrow_size = 10;
+    var label_pad = 10;
+    var ytick_stroke_width = 2;
 
     // First, clear the existing SVG and replace it with some defs
     svg.innerHTML = `
@@ -70,7 +106,7 @@ function barGraph(svg, labels, values, sems){
     var g_dy = g_y1 - g_y0;
 
     // Graph background
-    drawRect(svg, g_x0, g_y0-10, g_dx+10, g_dy+10, bgcolor);
+    drawRect(svg, g_x0, g_y0-arrow_size, g_dx+arrow_size, g_dy+arrow_size, bgcolor);
 
     // X ticks
     var x_tick_values = [];
@@ -81,7 +117,7 @@ function barGraph(svg, labels, values, sems){
 
     // X tick labels
     for (let i = 0; i < values.length; i++) {
-        drawText(svg, x_tick_values[i], g_y1 + 10, labels[i]);
+        draw_x_tick_label(svg, x_tick_values[i], g_y1 + label_pad, labels[i]);
     }
 
     // Determine Y axis limits
@@ -107,10 +143,37 @@ function barGraph(svg, labels, values, sems){
     }
 
     // Figure out where Y ticks should be
-    // TODO: figure out where ticks should be
-    // TODO: draw y ticks
-    // TODO: draw y tick labels
-    // TODO: draw y axis label
+    var n_tick_target = 10;  // want there to be roughly 10 ticks
+    var dtick_target = (ymax - ymin) / n_tick_target;
+    var dtick_scale = Math.pow(10, Math.floor(Math.log10(dtick_target)));
+    var tick_multiples = [1, 2, 5, 10];
+    var best_tick_diff = 100000;
+    var tick0;
+    var tickd
+    var tickn;
+    for (let i = 0; i < tick_multiples.length; i++) {
+        this_dtick = dtick_scale * tick_multiples[i];
+        t0 = this_dtick * Math.ceil(ymin / this_dtick);
+        t1 = this_dtick * Math.floor(ymax / this_dtick);
+        this_nticks = (t1 - t0) / this_dtick;
+        if (Math.abs(this_nticks - n_tick_target) < best_tick_diff) {
+            best_tick_diff = Math.abs(this_nticks - n_tick_target);
+            tick0 = t0;
+            tickd = this_dtick;
+            tickn = this_nticks;
+        }
+    }
+
+    // Draw yticks
+    for (let i = 0; i <= tickn; i++) {
+        tick_value = tick0 + i * tickd;
+        ty = (ymax - tick_value) / (ymax - ymin) * g_dy + g_y0;
+        drawLine(svg, g_x0, ty, g_x1+arrow_size, ty, false, ytick_color, ytick_stroke_width);
+        draw_y_tick_label(svg, g_x0 - label_pad, ty, `${tick_value}`);
+    }
+
+    // Draw Y axis label
+    draw_y_label(svg, 0, height/2, ylabel);
 
     // Draw bars
     for (let i = 0; i < values.length; i++) {
@@ -127,9 +190,9 @@ function barGraph(svg, labels, values, sems){
         y1 = (ymax - values[i] + sems[i]) / (ymax - ymin) * g_dy + g_y0;
         x0 = x_tick_values[i] - x_tick_dx * sem_wid;
         x1 = x_tick_values[i] + x_tick_dx * sem_wid;
-        drawLine(svg, x_tick_values[i], y0, x_tick_values[i], y1);
-        drawLine(svg, x0, y0, x1, y0);
-        drawLine(svg, x0, y1, x1, y1);
+        drawLine(svg, x_tick_values[i], y0, x_tick_values[i], y1, false, sem_color, sem_stroke_width);
+        drawLine(svg, x0, y0, x1, y0, false, sem_color, sem_stroke_width);
+        drawLine(svg, x0, y1, x1, y1, false, sem_color, sem_stroke_width);
     }
 
     // X axis
@@ -137,5 +200,8 @@ function barGraph(svg, labels, values, sems){
 
     // Y axis
     drawLine(svg, g_x0, g_y1, g_x0, g_y0, true);
+
+    // Title
+    draw_title(svg, width/2, 0, title);
 
 }
